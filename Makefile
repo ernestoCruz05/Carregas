@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c23 -pedantic -g
+CFLAGS = -Wall -Wextra -std=c2x -pedantic -g
 INCLUDES = -I./src -I./src/core -I./src/data_structs -I./src/algorithms -I./src/io -I./src/utils
 
 SRC_DIR = src
@@ -20,13 +20,25 @@ OBJECTS = $(SOURCES:.c=.o)
 
 TARGET = cabinet_loader
 
+TEST_DIR = tests
+TEST_SOURCES = $(TEST_DIR)/loader_validate_tests.c
+TEST_OBJECTS = $(TEST_SOURCES:.c=.o)
+TEST_TARGET = loader_validate_tests
+NON_MAIN_OBJECTS = $(filter-out $(SRC_DIR)/main.o,$(OBJECTS))
+
 $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(TARGET)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(TEST_DIR)/%.o: $(TEST_DIR)/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(TEST_TARGET): $(TEST_OBJECTS) $(NON_MAIN_OBJECTS)
+	$(CC) $(TEST_OBJECTS) $(NON_MAIN_OBJECTS) -o $(TEST_TARGET)
+
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TEST_OBJECTS) $(TARGET) $(TEST_TARGET)
 
 .PHONY: clean

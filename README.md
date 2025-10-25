@@ -23,3 +23,12 @@ src/
     ├── helpers.{c,h}   # General helper functions
     └── config.{c,h}    # Configuration management
 ```
+
+## Testing
+
+Build and run the validation tests with:
+
+```
+make loader_validate_tests
+./loader_validate_tests
+```
