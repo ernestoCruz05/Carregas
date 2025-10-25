@@ -4,6 +4,22 @@
 
 #define INITIAL_PLACEMENT_CAPACITY 10
 
+static void remove_placements_for_cabinet(LoadPlan *plan, const Cabinet *cabinet) {
+  if (plan == NULL || cabinet == NULL) return;
+
+  int i = 0;
+  while (i < plan->num_placements) {
+    if (plan->placements[i].cabinet == cabinet) {
+      for (int j = i; j < plan->num_placements - 1; j++) {
+        plan->placements[j] = plan->placements[j + 1];
+      }
+      plan->num_placements--;
+      continue;
+    }
+    i++;
+  }
+}
+
 LoadPlan *create_loadplan(Van *van) {
   if (van == NULL) {
     fprintf(stderr, "Cannot create loadplan with NULL van\n");
@@ -52,18 +68,12 @@ int add_cabinet_to_plan(LoadPlan *plan, Cabinet *cabinet) {
 
 int remove_cabinet_from_plan(LoadPlan *plan, int index) {
   if (plan == NULL) return -1;
-  
-  // Also remove any placement for this cabinet
-  // Note: This is a simplified approach - in a full implementation,
-  // you'd want to shift placements and update indices
-  if (index < plan->num_placements) {
-    
-    for (int i = index; i < plan->num_placements - 1; i++) {
-      plan->placements[i] = plan->placements[i + 1];
-    }
-    plan->num_placements--;
-  }
-  
+
+  Cabinet *cabinet = get_cabinet_at_index(plan->cabinets, index);
+  if (cabinet == NULL) return -1;
+
+  remove_placements_for_cabinet(plan, cabinet);
+
   return remove_cabinet_from_list(plan->cabinets, index);
 }
 
